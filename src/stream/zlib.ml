@@ -61,7 +61,7 @@ module Zlib = struct
       ) else
         try
           let transform = Cryptokit.Zlib.uncompress () in
-          transform#put_substring content 2 (len - 6);
+          transform#put_substring (Bytes.of_string content) 2 (len - 6);
           transform#finish;
           let result = transform#get_string in
 

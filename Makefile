@@ -1,4 +1,4 @@
-OCAML_OPTS=-w,+a-3-4-32..39,-warn-error,+a,-strict-sequence,-noautolink
+OCAML_OPTS=-w,+a-3-4-32..39-58,-warn-error,+a,-strict-sequence,-noautolink
 
 PROGRAM=caradoc
 
@@ -41,25 +41,16 @@ $(PROGRAM): main.native
 debug-menhir:
 	ocamlbuild -use-ocamlfind -menhir "menhir --dump --trace" src/main.native
 
-main.native:
-	ocamlbuild -cflags $(OCAML_OPTS) -use-ocamlfind src/main.native
+main.byte main.native:
+	ocamlbuild -cflags $(OCAML_OPTS) -use-ocamlfind src/$@
 	rm -f $@
 	ln -s _build/src/$@
 
-main.byte:
-	ocamlbuild -cflags $(OCAML_OPTS) -use-ocamlfind src/main.byte
+unit.byte unit.native:
+	ocamlbuild -cflags $(OCAML_OPTS) -tag-line "true: package(oUnit)" -use-ocamlfind -no-hygiene test/$@
 	rm -f $@
-	ln -s _build/src/$@
+	ln -s _build/test/$@
 
-unit.native:
-	ocamlbuild -cflags $(OCAML_OPTS) -build-dir "_build.test" -tag-line "true: package(oUnit)" -use-ocamlfind test/unit.native
-	rm -f $@
-	ln -s _build.test/test/$@
-
-unit.byte:
-	ocamlbuild -cflags $(OCAML_OPTS) -build-dir "_build.test" -tag-line "true: package(oUnit)" -use-ocamlfind test/unit.byte
-	rm -f $@
-	ln -s _build.test/test/$@
 
 %.indentml: %.ml
 	ocp-indent -i $<
@@ -105,7 +96,7 @@ tmpfolder:
 
 clean:
 	rm -f $(PROGRAM) *.native *.byte
-	rm -Rf _build _build.test
+	rm -Rf _build
 	rm -f oUnit-anon.cache
 	rm -Rf tmp
 

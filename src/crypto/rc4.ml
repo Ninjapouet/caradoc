@@ -43,7 +43,7 @@ module RC4 = struct
     {s = s; i = 0; j = 0;}
 
   let crypt (key : string) (src : string) : string =
-    let dst = String.copy src in
+    let dst = Bytes.of_string src in
     let x = init key in
 
     for a = 0 to (String.length src) - 1 do
@@ -51,9 +51,9 @@ module RC4 = struct
       x.j <- (x.j + x.s.(x.i)) mod 256;
       swap x.s x.i x.j;
       let mask = x.s.((x.s.(x.i) + x.s.(x.j)) mod 256) in
-      dst.[a] <- Char.chr ((Char.code dst.[a]) lxor mask);
+      dst.[a] <- Char.chr ((Char.code (Bytes.get dst a)) lxor mask);
     done;
-    dst
+    Bytes.unsafe_to_string dst
 
 end
 

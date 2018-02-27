@@ -95,10 +95,10 @@ let hexa_digit_of_int (n : int) : char =
 
 let hexa_of_char (c : char) : string =
   let x = Char.code c in
-  let s = "00" in
+  let s = Bytes.unsafe_of_string "00" in
   s.[0] <- hexa_digit_of_int (x / 16);
   s.[1] <- hexa_digit_of_int (x mod 16);
-  s
+  Bytes.unsafe_to_string s
 
 let hexa_of_char_buf (buf : Buffer.t) (c : char) : unit =
   let x = Char.code c in
